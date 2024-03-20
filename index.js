@@ -1,23 +1,21 @@
-const express = require('express')
-const app = express()
-const http = require('http')
-const {Server} = require("socket.io");
-const cors = require('cors')
+const dotenv = require('dotenv');
+const express = require('express');
+const app = express();
+dotenv.config({ path: "./configure/config.env" });
 
-app.use(cors())
+const { chats } = require('./data/data');
 
-const appserver =  http.createServer(app)
+console.log(chats);
 
-const io = new Server(appserver,{
-    cors:{
-        origin:"http://localhost:5173/",
-        methods:["POST","GET"]
-    }
+app.get('/chats', (req, res) => {
+    res.send(chats);
+});
 
+app.get('/chats/:id', (req, res) => {
+    const singleChat = chats.find((e) => e._id === req.params.id);
+    res.send(singleChat);
+});
 
-})
-
-
-appserver.listen(3000,()=>{
-    console.log("server is running")
-})
+app.listen(process.env.PORT, () => {
+    console.log("Server is running");
+});
